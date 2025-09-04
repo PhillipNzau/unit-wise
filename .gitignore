@@ -1,0 +1,44 @@
+# Root-level ignores
+.DS_Store
+*.log
+.env
+.env.*  # like .env.local, .env.production, etc.
+*.swp
+*.swo
+
+# Ignore Go build files and artifacts in backend/
+backend/bin
+backend/build
+backend/*.exe
+backend/*.exe~
+backend/*.out
+backend/*.test
+backend/coverage.*
+backend/.idea/
+backend/.vscode/
+backend/go.sum
+backend/go.mod~
+
+# Optional: ignore test result files
+backend/testdata/
+
+# Angular frontend/frontend ignores
+frontend/frontend/node_modules
+frontend/frontend/dist
+frontend/frontend/.angular/
+frontend/frontend/.output/
+frontend/frontend/.env
+frontend/frontend/.env.*  # like .env.local, etc.
+frontend/frontend/.vscode/
+frontend/frontend/.idea/
+frontend/frontend/package-lock.json
+frontend/frontend/npm-debug.log
+frontend/frontend/yarn-debug.log
+frontend/frontend/yarn-error.log
+
+# Optional: IDE configs for both projects
+**/.vscode/
+**/.idea/
+
+# Optional: OS-specific files
+Thumbs.db

@@ -1,0 +1,33 @@
+package routes
+
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/phillip/backend/config"
+	"github.com/phillip/backend/controllers"
+	"github.com/phillip/backend/middleware"
+)
+
+func SetupRoutes(r *gin.Engine, cfg *config.Config) {
+	// public
+	r.POST("/auth/register", controllers.Register(cfg))
+	r.POST("/auth/login", controllers.Login(cfg))
+	r.POST("/auth/refresh", controllers.RefreshToken(cfg))
+
+	// otp
+	r.POST("/auth/request-otp", controllers.RequestOTP(cfg))
+	r.POST("/auth/verify-otp", controllers.VerifyOTP(cfg))
+
+	// protected
+	auth := middleware.AuthMiddleware(cfg)
+	
+	creds := r.Group("/credentials")
+	creds.Use(auth)
+	{
+		creds.POST("", controllers.CreateCredential(cfg))
+		creds.GET("", controllers.ListCredentials(cfg))
+		creds.GET(":id", controllers.GetCredential(cfg))
+		creds.PUT(":id", controllers.UpdateCredential(cfg))
+		creds.DELETE(":id", controllers.DeleteCredential(cfg))
+	}
+
+}
