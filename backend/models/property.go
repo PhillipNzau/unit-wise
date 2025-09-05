@@ -13,7 +13,8 @@ type Property struct {
 	Description string             `bson:"description" json:"description"`
 	Location    string             `bson:"location" json:"location"`
 	Price       float64            `bson:"price" json:"price"`
-	Images      []string           `bson:"images" json:"images"` // Cloudinary URLs
+	Images      []string           `bson:"images" json:"images"` 
+	Available   bool               `bson:"available" json:"available"` 
 	CreatedAt   time.Time          `bson:"created_at" json:"created_at"`
 	UpdatedAt   time.Time          `bson:"updated_at" json:"updated_at"`
 }

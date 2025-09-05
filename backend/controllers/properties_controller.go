@@ -31,6 +31,7 @@ func CreateProperty(cfg *config.Config) gin.HandlerFunc {
 			Description string  `form:"description"`
 			Location    string  `form:"location" binding:"required"`
 			Price       float64 `form:"price" binding:"required"`
+			Available   *bool   `form:"available"` // pointer so it's optional
 		}
 
 		if err := c.ShouldBind(&input); err != nil {
@@ -78,6 +79,7 @@ func CreateProperty(cfg *config.Config) gin.HandlerFunc {
 			Location:    input.Location,
 			Price:       input.Price,
 			Images:      imageURLs,
+			Available:   input.Available == nil || *input.Available,
 			CreatedAt:   time.Now(),
 			UpdatedAt:   time.Now(),
 		}
@@ -149,6 +151,7 @@ func UpdateProperty(cfg *config.Config) gin.HandlerFunc {
 		role, _ := c.Get("role")
 		requesterID, _ := c.Get("userID")
 
+		// Parse property ID
 		id := c.Param("id")
 		objID, err := primitive.ObjectIDFromHex(id)
 		if err != nil {
@@ -156,19 +159,7 @@ func UpdateProperty(cfg *config.Config) gin.HandlerFunc {
 			return
 		}
 
-		var input struct {
-			Title       string  `json:"title,omitempty"`
-			Description string  `json:"description,omitempty"`
-			Location    string  `json:"location,omitempty"`
-			Price       float64 `json:"price,omitempty"`
-			Images      []string `json:"images,omitempty"`
-		}
-		if err := c.ShouldBindJSON(&input); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-
-		// Check ownership
+		// Load existing property
 		col := cfg.MongoClient.Database(cfg.DBName).Collection("properties")
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
@@ -179,29 +170,93 @@ func UpdateProperty(cfg *config.Config) gin.HandlerFunc {
 			return
 		}
 
+		// Ownership check
 		if role != "admin" && existing.UserID.Hex() != requesterID.(string) {
 			c.JSON(http.StatusForbidden, gin.H{"error": "Access denied"})
 			return
 		}
 
-		update := bson.M{
-			"title":       input.Title,
-			"description": input.Description,
-			"location":    input.Location,
-			"price":       input.Price,
-			"images":      input.Images,
-			"updated_at":  time.Now(),
+		// Prepare updates
+		update := bson.M{}
+		now := time.Now()
+
+		// Handle regular fields (from form-data, since images can be uploaded too)
+		var input struct {
+			Title       string   `form:"title"`
+			Description string   `form:"description"`
+			Location    string   `form:"location"`
+			Price       float64  `form:"price"`
+			Available   *bool    `form:"available"` // pointer so it's optional
+			Images      []string `form:"images"`   // existing images to keep
 		}
 
+		if err := c.ShouldBind(&input); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		if input.Title != "" {
+			update["title"] = input.Title
+		}
+		if input.Description != "" {
+			update["description"] = input.Description
+		}
+		if input.Location != "" {
+			update["location"] = input.Location
+		}
+		if input.Price > 0 {
+			update["price"] = input.Price
+		}
+		if input.Available != nil {
+			update["available"] = *input.Available
+		}
+
+		// Handle image updates
+		form, _ := c.MultipartForm()
+		newImageURLs := []string{}
+
+		if form != nil {
+			files := form.File["new_images"] // client must use "new_images" key for uploads
+			for _, fileHeader := range files {
+				file, err := fileHeader.Open()
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to open file"})
+					return
+				}
+				url, err := utils.UploadToCloudinary(file, fileHeader)
+				file.Close()
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{
+						"error":   "Image upload failed",
+						"details": err.Error(),
+					})
+					return
+				}
+				newImageURLs = append(newImageURLs, url)
+			}
+		}
+
+		// Final image list = kept images + newly uploaded ones
+		if input.Images != nil || len(newImageURLs) > 0 {
+			update["images"] = append(input.Images, newImageURLs...)
+		}
+
+		update["updated_at"] = now
+
+		// Apply update
 		_, err = col.UpdateOne(ctx, bson.M{"_id": objID}, bson.M{"$set": update})
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not update property"})
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"message": "Property updated successfully"})
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Property updated successfully",
+			"images":  update["images"],
+		})
 	}
 }
+
 
 // Delete Property
 func DeleteProperty(cfg *config.Config) gin.HandlerFunc {
