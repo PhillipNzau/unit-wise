@@ -30,4 +30,14 @@ func SetupRoutes(r *gin.Engine, cfg *config.Config) {
 		creds.DELETE(":id", controllers.DeleteCredential(cfg))
 	}
 
+	users := r.Group("/users")
+	users.Use(auth)
+	{
+		// users.POST("", controllers.ListUsers(cfg))
+		users.GET("", controllers.ListUsers(cfg))
+		users.GET(":id", controllers.GetUser(cfg))
+		users.PATCH(":id", controllers.UpdateUser(cfg))
+		users.DELETE(":id", controllers.DeleteUser(cfg))
+	}
+
 }
