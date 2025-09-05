@@ -50,4 +50,15 @@ func SetupRoutes(r *gin.Engine, cfg *config.Config) {
 		props.DELETE("/:id", controllers.DeleteProperty(cfg))
 	}
 
+	bookings := r.Group("/bookings")
+	bookings.Use(auth) // protect routes
+	{
+		bookings.POST("", controllers.CreateBooking(cfg))
+		bookings.GET("", controllers.ListBookings(cfg))
+		bookings.GET("/:id", controllers.GetBooking(cfg))
+		bookings.PATCH("/:id", controllers.UpdateBooking(cfg))
+		bookings.DELETE("/:id", controllers.DeleteBooking(cfg))
+	}
+
+
 }
