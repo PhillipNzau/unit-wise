@@ -40,4 +40,14 @@ func SetupRoutes(r *gin.Engine, cfg *config.Config) {
 		users.DELETE(":id", controllers.DeleteUser(cfg))
 	}
 
+	props := r.Group("/properties")
+	props.Use(auth) // ensure user is logged in
+	{
+		props.POST("", controllers.CreateProperty(cfg))
+		props.GET("", controllers.ListProperties(cfg))
+		props.GET("/:id", controllers.GetProperty(cfg))
+		props.PATCH("/:id", controllers.UpdateProperty(cfg))
+		props.DELETE("/:id", controllers.DeleteProperty(cfg))
+	}
+
 }
