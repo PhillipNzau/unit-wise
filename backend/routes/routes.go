@@ -60,5 +60,15 @@ func SetupRoutes(r *gin.Engine, cfg *config.Config) {
 		bookings.DELETE("/:id", controllers.DeleteBooking(cfg))
 	}
 
+	reports := r.Group("/housekeeper-reports")
+	reports.Use(auth)
+
+	{
+		reports.POST("", controllers.CreateHousekeeperReport(cfg)) 
+		reports.GET("", controllers.ListHousekeeperReports(cfg))   
+		reports.GET("/:id", controllers.GetHousekeeperReport(cfg))   
+		reports.PATCH("/:id", controllers.UpdateHousekeeperReport(cfg))   
+		reports.DELETE("/:id", controllers.DeleteHousekeeperReport(cfg))  
+	}
 
 }
