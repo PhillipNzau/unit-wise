@@ -52,6 +52,8 @@ func CreateBooking(cfg *config.Config) gin.HandlerFunc {
 		}
 
 		c.JSON(http.StatusCreated, input)
+
+
 	}
 }
 

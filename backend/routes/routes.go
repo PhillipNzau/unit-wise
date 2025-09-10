@@ -71,4 +71,11 @@ func SetupRoutes(r *gin.Engine, cfg *config.Config) {
 		reports.DELETE("/:id", controllers.DeleteHousekeeperReport(cfg))  
 	}
 
+	notifs := r.Group("/notifications")
+	notifs.Use(auth) // protected
+	{
+		notifs.GET("", controllers.ListNotifications(cfg))
+		notifs.PATCH("/:id/read", controllers.MarkNotificationRead(cfg))
+	}
+
 }

@@ -87,6 +87,14 @@ func CreateHousekeeperReport(cfg *config.Config) gin.HandlerFunc {
 		}
 
 		c.JSON(http.StatusCreated, report)
+
+		propertyCol := cfg.MongoClient.Database(cfg.DBName).Collection("properties")
+		var property models.Property
+		if err := propertyCol.FindOne(ctx, bson.M{"_id": report.PropertyID}).Decode(&property); err == nil {
+			recipients := append([]primitive.ObjectID{property.UserID}, property.Housekeepers...)
+
+			_ = utils.CreateNotification(cfg, recipients, "Cleaning Report Submitted", "A new cleaning report has been submitted for your property.")
+		}
 	}
 }
 
