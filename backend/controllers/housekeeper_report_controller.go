@@ -86,100 +86,18 @@ func CreateHousekeeperReport(cfg *config.Config) gin.HandlerFunc {
 			return
 		}
 
-		c.JSON(http.StatusCreated, report)
-
+		// ✅ Fetch related property to notify owner + housekeepers
 		propertyCol := cfg.MongoClient.Database(cfg.DBName).Collection("properties")
 		var property models.Property
 		if err := propertyCol.FindOne(ctx, bson.M{"_id": report.PropertyID}).Decode(&property); err == nil {
+			// Collect recipients (property owner + housekeepers)
 			recipients := append([]primitive.ObjectID{property.UserID}, property.Housekeepers...)
 
+			// Send notification
 			_ = utils.CreateNotification(cfg, recipients, "Cleaning Report Submitted", "A new cleaning report has been submitted for your property.")
 		}
-	}
-}
 
-// List all Housekeeper Reports with property details
-func ListHousekeeperReports(cfg *config.Config) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		col := cfg.MongoClient.Database(cfg.DBName).Collection("housekeeper_reports")
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-		defer cancel()
-
-		pipeline := mongo.Pipeline{
-			{{Key: "$lookup", Value: bson.M{
-				"from":         "properties",
-				"localField":   "property_id",
-				"foreignField": "_id",
-				"as":           "property",
-			}}},
-			{{Key: "$unwind", Value: bson.M{
-				"path":                       "$property",
-				"preserveNullAndEmptyArrays": true,
-			}}},
-		}
-
-		cursor, err := col.Aggregate(ctx, pipeline)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not fetch reports"})
-			return
-		}
-
-		var reports []bson.M
-		if err := cursor.All(ctx, &reports); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not decode reports"})
-			return
-		}
-
-		c.JSON(http.StatusOK, reports)
-	}
-}
-
-// Get single Housekeeper Report with property details
-func GetHousekeeperReport(cfg *config.Config) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		id := c.Param("id")
-		objID, err := primitive.ObjectIDFromHex(id)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
-			return
-		}
-
-		col := cfg.MongoClient.Database(cfg.DBName).Collection("housekeeper_reports")
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-		defer cancel()
-
-		pipeline := mongo.Pipeline{
-			{{Key: "$match", Value: bson.M{"_id": objID}}},
-			{{Key: "$lookup", Value: bson.M{
-				"from":         "properties",
-				"localField":   "property_id",
-				"foreignField": "_id",
-				"as":           "property",
-			}}},
-			{{Key: "$unwind", Value: bson.M{
-				"path":                       "$property",
-				"preserveNullAndEmptyArrays": true,
-			}}},
-		}
-
-		cursor, err := col.Aggregate(ctx, pipeline)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not fetch report"})
-			return
-		}
-
-		var reports []bson.M
-		if err := cursor.All(ctx, &reports); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not decode report"})
-			return
-		}
-
-		if len(reports) == 0 {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Report not found"})
-			return
-		}
-
-		c.JSON(http.StatusOK, reports[0])
+		c.JSON(http.StatusCreated, report)
 	}
 }
 
@@ -263,7 +181,7 @@ func UpdateHousekeeperReport(cfg *config.Config) gin.HandlerFunc {
 			update["damage_images"] = append(input.DamageImages, newImageURLs...)
 		}
 
-		// ❗ Make sure at least one field (other than updated_at) is being updated
+		// ❗ Ensure at least one field (other than updated_at) is being updated
 		if len(update) == 1 {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "no fields to update"})
 			return
@@ -276,7 +194,104 @@ func UpdateHousekeeperReport(cfg *config.Config) gin.HandlerFunc {
 			return
 		}
 
+		// ✅ Fetch related property
+		propertyCol := cfg.MongoClient.Database(cfg.DBName).Collection("properties")
+		var property models.Property
+		if err := propertyCol.FindOne(ctx, bson.M{"_id": existing.PropertyID}).Decode(&property); err == nil {
+			// ✅ Collect recipients (property owner + housekeepers)
+			recipients := append([]primitive.ObjectID{property.UserID}, property.Housekeepers...)
+
+			// ✅ Send notification
+			_ = utils.CreateNotification(cfg, recipients, "Cleaning Report Updated", "A cleaning report for your property has been updated.")
+		}
+
 		c.JSON(http.StatusOK, gin.H{"message": "report updated successfully"})
+	}
+}
+
+
+// List all Housekeeper Reports with property details
+func ListHousekeeperReports(cfg *config.Config) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		col := cfg.MongoClient.Database(cfg.DBName).Collection("housekeeper_reports")
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+
+		pipeline := mongo.Pipeline{
+			{{Key: "$lookup", Value: bson.M{
+				"from":         "properties",
+				"localField":   "property_id",
+				"foreignField": "_id",
+				"as":           "property",
+			}}},
+			{{Key: "$unwind", Value: bson.M{
+				"path":                       "$property",
+				"preserveNullAndEmptyArrays": true,
+			}}},
+		}
+
+		cursor, err := col.Aggregate(ctx, pipeline)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not fetch reports"})
+			return
+		}
+
+		var reports []bson.M
+		if err := cursor.All(ctx, &reports); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not decode reports"})
+			return
+		}
+
+		c.JSON(http.StatusOK, reports)
+	}
+}
+
+// Get single Housekeeper Report with property details
+func GetHousekeeperReport(cfg *config.Config) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		id := c.Param("id")
+		objID, err := primitive.ObjectIDFromHex(id)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+			return
+		}
+
+		col := cfg.MongoClient.Database(cfg.DBName).Collection("housekeeper_reports")
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+
+		pipeline := mongo.Pipeline{
+			{{Key: "$match", Value: bson.M{"_id": objID}}},
+			{{Key: "$lookup", Value: bson.M{
+				"from":         "properties",
+				"localField":   "property_id",
+				"foreignField": "_id",
+				"as":           "property",
+			}}},
+			{{Key: "$unwind", Value: bson.M{
+				"path":                       "$property",
+				"preserveNullAndEmptyArrays": true,
+			}}},
+		}
+
+		cursor, err := col.Aggregate(ctx, pipeline)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not fetch report"})
+			return
+		}
+
+		var reports []bson.M
+		if err := cursor.All(ctx, &reports); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not decode report"})
+			return
+		}
+
+		if len(reports) == 0 {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Report not found"})
+			return
+		}
+
+		c.JSON(http.StatusOK, reports[0])
 	}
 }
 
