@@ -30,4 +30,52 @@ func SetupRoutes(r *gin.Engine, cfg *config.Config) {
 		creds.DELETE(":id", controllers.DeleteCredential(cfg))
 	}
 
+	users := r.Group("/users")
+	users.Use(auth)
+	{
+		// users.POST("", controllers.ListUsers(cfg))
+		users.GET("", controllers.ListUsers(cfg))
+		users.GET(":id", controllers.GetUser(cfg))
+		users.PATCH(":id", controllers.UpdateUser(cfg))
+		users.DELETE(":id", controllers.DeleteUser(cfg))
+	}
+
+	props := r.Group("/properties")
+	props.Use(auth) // ensure user is logged in
+	{
+		props.POST("", controllers.CreateProperty(cfg))
+		props.GET("", controllers.ListProperties(cfg))
+		props.GET("/:id", controllers.GetProperty(cfg))
+		props.PATCH("/:id", controllers.UpdateProperty(cfg))
+		props.DELETE("/:id", controllers.DeleteProperty(cfg))
+	}
+
+	bookings := r.Group("/bookings")
+	bookings.Use(auth) // protect routes
+	{
+		bookings.POST("", controllers.CreateBooking(cfg))
+		bookings.GET("", controllers.ListBookings(cfg))
+		bookings.GET("/:id", controllers.GetBooking(cfg))
+		bookings.PATCH("/:id", controllers.UpdateBooking(cfg))
+		bookings.DELETE("/:id", controllers.DeleteBooking(cfg))
+	}
+
+	reports := r.Group("/housekeeper-reports")
+	reports.Use(auth)
+
+	{
+		reports.POST("", controllers.CreateHousekeeperReport(cfg)) 
+		reports.GET("", controllers.ListHousekeeperReports(cfg))   
+		reports.GET("/:id", controllers.GetHousekeeperReport(cfg))   
+		reports.PATCH("/:id", controllers.UpdateHousekeeperReport(cfg))   
+		reports.DELETE("/:id", controllers.DeleteHousekeeperReport(cfg))  
+	}
+
+	notifs := r.Group("/notifications")
+	notifs.Use(auth) // protected
+	{
+		notifs.GET("", controllers.ListNotifications(cfg))
+		notifs.PATCH("/:id/read", controllers.MarkNotificationRead(cfg))
+	}
+
 }
