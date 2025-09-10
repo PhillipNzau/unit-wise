@@ -23,16 +23,16 @@ services:
     ports:
       - "${PORT}:${PORT}"
 
-  # frontend:
-  #   build:
-  #     context: ..
-  #     dockerfile: deploy/frontend.Dockerfile
-  #   container_name: frontend
-  #   restart: always
-  #   ports:
-  #     - "4200:80"
-  #   depends_on:
-  #     - backend
+  frontend:
+    build:
+      context: ..
+      dockerfile: deploy/frontend.Dockerfile
+    container_name: frontend
+    restart: always
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
 
 volumes:
   mongo_data:

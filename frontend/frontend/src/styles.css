@@ -1,1 +1,42 @@
 /* You can add global styles to this file, and also import other style files */
+@import url("https://fonts.googleapis.com/css2?family=Jura:wght@300..700&display=swap");
+@use "@ngneat/hot-toast/src/styles/styles.scss";
+@import "tailwindcss";
+@theme {
+  /* Define custom colors */
+  --color-primary: #daf1de;
+  --color-secondary: #8eb69b;
+  --color-dark: #163832;
+  --color-container: #fffbfb;
+  --color-shadow: #0b2b26;
+  --color-text: #051f20;
+}
+
+* {
+  font-family: "Jura", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  10% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  90% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+.animate-fade-in-out {
+  animation: fadeInOut 1.5s ease-in-out forwards;
+}
