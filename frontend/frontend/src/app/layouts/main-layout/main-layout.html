@@ -1,5 +1,12 @@
-<!-- This layout includes your shared UI (e.g. navbar) -->
-<app-navbar></app-navbar>
-
-<!-- Main page content will render here -->
-<router-outlet></router-outlet>
+<section
+  class="h-screen w-screen overflow-hidden flex flex-col justify-between"
+>
+  <div class="h-full overflow-hidden overflow-y-scroll">
+    <!-- Main page content will render here -->
+    <router-outlet></router-outlet>
+  </div>
+  <!-- This layout includes your shared UI (e.g. navbar) -->
+  <div class="h-20 w-full px-4 my-2">
+    <app-navbar></app-navbar>
+  </div>
+</section>
