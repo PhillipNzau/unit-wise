@@ -10,6 +10,8 @@ import {
   LoginUserModel,
   LoginUserResponseModel,
   RegisterUserModel,
+  UpdateUserModel,
+  UpdateUserResponseModel,
 } from '../models/users';
 
 @Injectable({
@@ -25,9 +27,6 @@ export class Authservice {
   // login user
   loginUser(userData: LoginUserModel) {
     const url = `${this.apiConfig.baseUrl}${this.apiConfig.endpoints.loginUser}`;
-    console.log('====================================');
-    console.log(url);
-    console.log('====================================');
     return this.http.post<LoginUserResponseModel>(url, userData).pipe(
       map((res) => {
         if (res.status === 200) {
@@ -82,6 +81,19 @@ export class Authservice {
           localStorage.setItem('cnLguWf', 'true');
           this.loggedIn = !!localStorage.getItem('cnLguWf');
 
+          return res;
+        }
+        return res;
+      })
+    );
+  }
+
+  // update user
+  updateUser(userData: UpdateUserModel, userId: string) {
+    const url = `${this.apiConfig.baseUrl}${this.apiConfig.endpoints.updateUser}/${userId}`;
+    return this.http.patch<UpdateUserResponseModel>(url, userData).pipe(
+      map((res) => {
+        if (res.status === 200) {
           return res;
         }
         return res;

@@ -8,6 +8,7 @@ export interface ApiConfig {
     registerUser: string;
     refreshToken: string;
     verifyOtp: string;
+    updateUser: string;
   };
 }
 
@@ -22,5 +23,6 @@ export const apiConfigValue: ApiConfig = {
     registerUser: '/auth/register',
     refreshToken: '/auth/refresh',
     verifyOtp: '/auth/verify-otp',
+    updateUser: '/users',
   },
 };

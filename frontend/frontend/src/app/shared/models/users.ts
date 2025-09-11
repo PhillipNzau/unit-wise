@@ -9,6 +9,16 @@ export interface LoginUserModel {
   email?: string;
 }
 
+export interface UpdateUserModel {
+  name?: string;
+  phone?: string;
+}
+
+export interface UpdateUserResponseModel {
+  status: number;
+  user: UserModel;
+}
+
 export interface UserModel {
   id: string;
   email: string;
