@@ -15,12 +15,13 @@ import {
   withFetch,
   withInterceptors,
 } from '@angular/common/http';
+import { apiInterceptor } from './shared/services/api-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
-    provideHttpClient(withFetch(), withInterceptors([])),
+    provideHttpClient(withFetch(), withInterceptors([apiInterceptor])),
     provideRouter(routes),
     {
       provide: API_CONFIG,
