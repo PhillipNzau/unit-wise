@@ -108,58 +108,58 @@ export class LoginForm {
   submitSignupForm() {
     const loadingToast = this.toastService.loading('Processing...');
     this.isSubmitting.set(true);
-    // this.authService.registerUser(this.signUpForm.value).subscribe({
-    //   next: (res) => {
-    //     this.toastService.success(
-    //       `User registration success, check email for otp!`,
-    //       {
-    //         duration: 2000,
-    //       }
-    //     );
-    //     loadingToast.close();
-    //     this.isSubmitting.set(false);
-    //     this.isVerifyOtp.set(true);
-    //     this.isSignup.set(false);
-    //     this.verifyOtpForm.patchValue({
-    //       email: this.signUpForm.value.email,
-    //     });
-    //   },
-    //   error: (err) => {
-    //     this.toastService.error(
-    //       `Something went wrong registering! ${err.error.error}!`,
-    //       {
-    //         duration: 2000,
-    //       }
-    //     );
-    //     loadingToast.close();
-    //     this.isSubmitting.set(false);
-    //   },
-    // });
+    this.authService.registerUser(this.signUpForm.value).subscribe({
+      next: (res) => {
+        this.toastService.success(
+          `User registration success, check email for otp!`,
+          {
+            duration: 2000,
+          }
+        );
+        loadingToast.close();
+        this.isSubmitting.set(false);
+        this.isVerifyOtp.set(true);
+        this.isSignup.set(false);
+        this.verifyOtpForm.patchValue({
+          email: this.signUpForm.value.email,
+        });
+      },
+      error: (err) => {
+        this.toastService.error(
+          `Something went wrong registering! ${err.error.error}!`,
+          {
+            duration: 2000,
+          }
+        );
+        loadingToast.close();
+        this.isSubmitting.set(false);
+      },
+    });
   }
 
   // verify otp
   submitOtpForm() {
     const loadingToast = this.toastService.loading('Processing...');
     this.isSubmitting.set(true);
-    // this.authService.verifyOtp(this.verifyOtpForm.value).subscribe({
-    //   next: (res) => {
-    //     this.toastService.success(`User Verified success, Welcome!`, {
-    //       duration: 2000,
-    //     });
-    //     this.route.navigate(['/credentials']);
-    //     loadingToast.close();
-    //     this.isSubmitting.set(false);
-    //   },
-    //   error: (err) => {
-    //     this.toastService.error(
-    //       `Something went wrong verifying! ${err.error.error}!`,
-    //       {
-    //         duration: 2000,
-    //       }
-    //     );
-    //     loadingToast.close();
-    //     this.isSubmitting.set(false);
-    //   },
-    // });
+    this.authService.verifyOtp(this.verifyOtpForm.value).subscribe({
+      next: (res) => {
+        this.toastService.success(`User Verified success, Welcome!`, {
+          duration: 2000,
+        });
+        this.route.navigate(['/properties']);
+        loadingToast.close();
+        this.isSubmitting.set(false);
+      },
+      error: (err) => {
+        this.toastService.error(
+          `Something went wrong verifying! ${err.error.error}!`,
+          {
+            duration: 2000,
+          }
+        );
+        loadingToast.close();
+        this.isSubmitting.set(false);
+      },
+    });
   }
 }

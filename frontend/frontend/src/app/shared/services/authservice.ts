@@ -59,10 +59,10 @@ export class Authservice {
     return this.http.post<any>(url, body).pipe(
       map((res) => {
         if (res.status === 200) {
-          localStorage.setItem('subSfTk', JSON.stringify(res.access_token));
-          localStorage.setItem('subSfRTk', JSON.stringify(res.refresh_token));
-          localStorage.setItem('cnLgSubSf', 'true');
-          this.loggedIn = !!localStorage.getItem('cnLgSubSf');
+          localStorage.setItem('uWfTk', JSON.stringify(res.access_token));
+          localStorage.setItem('uWfRTk', JSON.stringify(res.refresh_token));
+          localStorage.setItem('cnLguWf', 'true');
+          this.loggedIn = !!localStorage.getItem('cnLguWf');
 
           return res;
         }
@@ -76,11 +76,11 @@ export class Authservice {
     return this.http.post<any>(url, otpBody).pipe(
       map((res) => {
         if (res.status === 200) {
-          localStorage.setItem('subSfUsr', JSON.stringify(res.user));
-          localStorage.setItem('subSfTk', JSON.stringify(res.access_token));
-          localStorage.setItem('subSfRTk', JSON.stringify(res.refresh_token));
-          localStorage.setItem('cnLgSubSf', 'true');
-          this.loggedIn = !!localStorage.getItem('cnLgSubSf');
+          localStorage.setItem('uWfUsr', JSON.stringify(res.user));
+          localStorage.setItem('uWfTk', JSON.stringify(res.access_token));
+          localStorage.setItem('uWfRTk', JSON.stringify(res.refresh_token));
+          localStorage.setItem('cnLguWf', 'true');
+          this.loggedIn = !!localStorage.getItem('cnLguWf');
 
           return res;
         }
@@ -91,7 +91,7 @@ export class Authservice {
 
   // Returns true when user is logged in and email is verified
   get isLoggedIn() {
-    this.loggedIn = !!localStorage.getItem('cnLgSubSf');
+    this.loggedIn = !!localStorage.getItem('cnLguWf');
 
     if (!this.loggedIn) {
       // You can return the promise from the router's navigate call directly
