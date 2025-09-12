@@ -14,7 +14,7 @@ RUN npm run build --prod
 # ---- Serve with Nginx ----
 FROM nginx:1.25
 
-COPY --from=builder /app/dist/frontend /usr/share/nginx/html
+COPY --from=builder /app/dist/frontend/browser /usr/share/nginx/html
 
 # Copy custom nginx config (optional)
 COPY deploy/nginx.conf /etc/nginx/conf.d/default.conf

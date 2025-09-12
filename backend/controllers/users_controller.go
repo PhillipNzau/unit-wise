@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/phillip/backend/config"
 	"github.com/phillip/backend/models"
@@ -72,11 +73,6 @@ func GetUser(cfg *config.Config) gin.HandlerFunc {
 
 func UpdateUser(cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// Get role and userID from context (set by your auth middleware)
-		// role, _ := c.Get("role")
-		// requesterID, _ := c.Get("userID")
-
-		// Get user id from URL param
 		userID := c.Param("id")
 		objID, err := primitive.ObjectIDFromHex(userID)
 		if err != nil {
@@ -84,17 +80,11 @@ func UpdateUser(cfg *config.Config) gin.HandlerFunc {
 			return
 		}
 
-		// If not admin, only allow updating their own record
-		// if role != "admin" && requesterID != userID {
-		// 	c.JSON(http.StatusForbidden, gin.H{"error": "Access denied"})
-		// 	return
-		// }
-
 		var input struct {
 			Name  string `json:"name,omitempty"`
 			Email string `json:"email,omitempty"`
 			Phone string `json:"phone,omitempty"`
-			Role  string `json:"role,omitempty"` // only admins should be allowed to change role
+			Role  string `json:"role,omitempty"`
 		}
 
 		if err := c.ShouldBindJSON(&input); err != nil {
@@ -112,7 +102,7 @@ func UpdateUser(cfg *config.Config) gin.HandlerFunc {
 		if input.Phone != "" {
 			update["phone"] = input.Phone
 		}
-		if input.Role != ""  {
+		if input.Role != "" {
 			update["role"] = input.Role
 		}
 
@@ -120,15 +110,28 @@ func UpdateUser(cfg *config.Config) gin.HandlerFunc {
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 
-		_, err = col.UpdateOne(ctx, bson.M{"_id": objID}, bson.M{"$set": update})
+		var updatedUser bson.M
+		err = col.FindOneAndUpdate(
+			ctx,
+			bson.M{"_id": objID},
+			bson.M{"$set": update},
+			options.FindOneAndUpdate().SetReturnDocument(options.After),
+		).Decode(&updatedUser)
+
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not update user"})
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"message": "User updated successfully"})
+		c.JSON(http.StatusOK, gin.H{
+			"status":  http.StatusOK,
+			"message": "User updated successfully",
+			"user":    updatedUser,
+		})
 	}
 }
+
+
 
 func DeleteUser(cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {

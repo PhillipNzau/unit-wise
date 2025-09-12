@@ -16,7 +16,7 @@ backend/*.test
 backend/coverage.*
 backend/.idea/
 backend/.vscode/
-backend/go.sum
+# backend/go.sum
 backend/go.mod~
 
 # Optional: ignore test result files
