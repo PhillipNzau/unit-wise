@@ -9,6 +9,9 @@ export interface ApiConfig {
     refreshToken: string;
     verifyOtp: string;
     updateUser: string;
+
+    // property
+    propertyUrl: string;
   };
 }
 
@@ -24,5 +27,8 @@ export const apiConfigValue: ApiConfig = {
     refreshToken: '/auth/refresh',
     verifyOtp: '/auth/verify-otp',
     updateUser: '/users',
+
+    // property
+    propertyUrl: '/properties',
   },
 };
