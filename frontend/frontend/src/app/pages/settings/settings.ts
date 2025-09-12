@@ -40,6 +40,8 @@ export class Settings {
         next: (res) => {
           loadingToast.close();
           this.isSubmitting.set(false);
+          this.getUser();
+          this.isToggled.set(!this.isToggled);
         },
         error: (err) => {
           this.toastService.error(
@@ -52,5 +54,19 @@ export class Settings {
           this.isSubmitting.set(false);
         },
       });
+  }
+
+  getUser() {
+    this.authService.getUser(this.userDetails()!.id).subscribe({
+      next: (res) => {},
+      error: (err) => {
+        this.toastService.error(
+          `Something went wrong updating! ${err.error.error}!!`,
+          {
+            duration: 2000,
+          }
+        );
+      },
+    });
   }
 }

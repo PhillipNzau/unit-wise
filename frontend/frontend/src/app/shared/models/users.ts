@@ -25,6 +25,7 @@ export interface UserModel {
   name: string;
   phone: string;
   role: string;
+  refresh_token: string;
 }
 export interface LoginUserResponseModel {
   status: number;

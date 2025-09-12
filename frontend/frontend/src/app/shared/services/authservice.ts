@@ -101,6 +101,20 @@ export class Authservice {
     );
   }
 
+  // get user
+  getUser(userId: string) {
+    const url = `${this.apiConfig.baseUrl}${this.apiConfig.endpoints.updateUser}/${userId}`;
+    return this.http.get<any>(url).pipe(
+      map((res) => {
+        localStorage.setItem('uWfUsr', JSON.stringify(res));
+        if (res.status === 200) {
+          return res;
+        }
+        return res;
+      })
+    );
+  }
+
   // Returns true when user is logged in and email is verified
   get isLoggedIn() {
     this.loggedIn = !!localStorage.getItem('cnLguWf');
