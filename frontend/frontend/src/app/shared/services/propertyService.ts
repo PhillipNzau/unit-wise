@@ -46,7 +46,7 @@ export class PropertyService {
   }
 
   // create  property
-  createProperty(propertyData: CreatePropertyModel) {
+  createProperty(propertyData: any) {
     const url = `${this.apiConfig.baseUrl}${this.apiConfig.endpoints.propertyUrl}`;
     return this.http.post<PropertyResponseModel>(url, propertyData).pipe(
       map((res) => {

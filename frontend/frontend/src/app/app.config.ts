@@ -15,6 +15,7 @@ import {
   withFetch,
   withInterceptors,
 } from '@angular/common/http';
+
 import { apiInterceptor } from './shared/services/api-interceptor';
 
 export const appConfig: ApplicationConfig = {
