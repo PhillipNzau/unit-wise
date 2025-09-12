@@ -16,7 +16,7 @@ export const routes: Routes = [
       import('./layouts/main-layout/main-layout.routes').then(
         (mod) => mod.PAGES_ROUTES
       ),
-    // canActivate: [() => inject(Authservice).isLoggedIn],
+    canActivate: [() => inject(Authservice).isLoggedIn],
   },
   // redirect empty path
   {
