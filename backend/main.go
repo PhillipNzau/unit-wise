@@ -41,7 +41,7 @@ func main() {
 	// CORS configuration
 	r.Use(cors.New(cors.Config{
 		AllowOrigins: []string{
-			"https://sub-safe-two.vercel.app",
+			"https://unit-wise-khaki.vercel.app",
 			"http://localhost:4200",
 		},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},

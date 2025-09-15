@@ -17,6 +17,13 @@ export const PAGES_ROUTES: Route[] = [
           import('../../pages/properties/properties').then((m) => m.Properties),
       },
       {
+        path: 'properties/:id',
+        loadComponent: () =>
+          import(
+            '../../pages/properties/components/property-details/property-details'
+          ).then((m) => m.PropertyDetails),
+      },
+      {
         path: 'reports',
         loadComponent: () =>
           import('../../pages/reports/reports').then((m) => m.Reports),
