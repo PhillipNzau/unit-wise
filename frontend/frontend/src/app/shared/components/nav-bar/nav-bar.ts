@@ -13,4 +13,8 @@ export class NavBar {
   isRouteActive(routePath: string): boolean {
     return this.router.url.includes(routePath);
   }
+
+  vibrateOnClick() {
+    navigator.vibrate(30);
+  }
 }

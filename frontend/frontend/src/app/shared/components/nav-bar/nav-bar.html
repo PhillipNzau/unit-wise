@@ -5,6 +5,7 @@
   <ul class="flex gap-4 items-center justify-between text-[11px] w-full">
     <li>
       <a
+        (click)="vibrateOnClick()"
         routerLink="/properties"
         [ngClass]="{ 'text-rose-400': isRouteActive('/properties') }"
         class="flex flex-col items-center space-x-2 hover:text-rose-400 transition-colors space-y-2"
@@ -36,6 +37,7 @@
     </li>
     <li>
       <a
+        (click)="vibrateOnClick()"
         routerLink="/reports"
         [ngClass]="{ 'text-rose-400': isRouteActive('/reports') }"
         class="flex flex-col items-center space-x-2 hover:text-rose-400 transition-colors space-y-2"
@@ -65,6 +67,7 @@
     </li>
     <li>
       <a
+        (click)="vibrateOnClick()"
         routerLink="/notifications"
         [ngClass]="{ 'text-rose-400': isRouteActive('/notifications') }"
         class="flex flex-col items-center space-x-2 hover:text-rose-400 transition-colors space-y-2"
@@ -94,6 +97,7 @@
     </li>
     <li>
       <a
+        (click)="vibrateOnClick()"
         routerLink="/profile"
         [ngClass]="{ 'text-rose-400': isRouteActive('/profile') }"
         class="flex flex-col items-center justify-center space-x-2 hover:text-rose-400 transition-colors space-y-2"
