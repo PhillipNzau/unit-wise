@@ -44,7 +44,7 @@ func main() {
 			"https://unit-wise-khaki.vercel.app",
 			"http://localhost:4200",
 		},
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"},
 		AllowHeaders: []string{"Origin", "Content-Type", "Authorization", "If-None-Match", "If-Modified-Since",
 		},
 		ExposeHeaders:    []string{"ETag", "Last-Modified", "Content-Length"}, 
