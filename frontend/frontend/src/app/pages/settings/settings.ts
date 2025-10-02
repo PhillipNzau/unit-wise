@@ -3,6 +3,7 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Authservice } from '../../shared/services/authservice';
 import { HotToastService } from '@ngneat/hot-toast';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-settings',
@@ -14,6 +15,8 @@ export class Settings {
   fb = inject(FormBuilder);
   authService = inject(Authservice);
   toastService = inject(HotToastService);
+  route = inject(Router);
+
   isSubmitting = signal<boolean>(false);
   isToggled = signal<boolean>(false);
 
@@ -68,5 +71,10 @@ export class Settings {
         );
       },
     });
+  }
+
+  logOut() {
+    localStorage.clear();
+    this.route.navigate(['/auth']);
   }
 }

@@ -14,7 +14,7 @@ type Property struct {
 	Location      string               `bson:"location" json:"location"`
 	Price         float64              `bson:"price" json:"price"`
 	Images        []string             `bson:"images" json:"images"`
-	Available  bool                 `bson:"availability" json:"availability"`
+	Available  	  bool                 `bson:"available" json:"available"`
 	Housekeepers  []primitive.ObjectID `bson:"housekeepers,omitempty" json:"housekeepers,omitempty"`
 	CreatedAt     time.Time            `bson:"created_at" json:"created_at"`
 	UpdatedAt     time.Time            `bson:"updated_at" json:"updated_at"`
