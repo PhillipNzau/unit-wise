@@ -20,8 +20,13 @@ export interface PropertyResponseModel {
   location?: string;
   price?: number;
   images?: string[];
-  availability?: boolean;
+  available?: boolean;
   housekeepers?: string[];
   created_at?: string;
   updated_at?: string;
+}
+
+export interface PropertyUpdateResponseModel {
+  message?: string;
+  property?: PropertyResponseModel;
 }

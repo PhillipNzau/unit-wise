@@ -254,9 +254,16 @@ func UpdateProperty(cfg *config.Config) gin.HandlerFunc {
 			return
 		}
 
+		// ✅ Fetch the updated property
+		var updated models.Property
+		if err := col.FindOne(ctx, bson.M{"_id": objID}).Decode(&updated); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve updated property"})
+			return
+		}
+
 		c.JSON(http.StatusOK, gin.H{
-			"message": "Property updated successfully",
-			"images":  update["images"],
+			"message":  "Property updated successfully",
+			"property": updated,
 		})
 	}
 }

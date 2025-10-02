@@ -7,6 +7,7 @@ import { API_CONFIG, ApiConfig } from '../../api.config';
 import {
   CreatePropertyModel,
   PropertyResponseModel,
+  PropertyUpdateResponseModel,
   UpdatePropertyModel,
 } from '../models/properties-model';
 
@@ -61,12 +62,12 @@ export class PropertyService {
   // update  property
   updateProperty(propertyData: UpdatePropertyModel, propertyId: string) {
     const url = `${this.apiConfig.baseUrl}${this.apiConfig.endpoints.propertyUrl}/${propertyId}`;
-    return this.http.patch<PropertyResponseModel>(url, propertyData).pipe(
+    return this.http.patch<any>(url, propertyData).pipe(
       map((res) => {
         // if (res.status === 200) {
         //   return res;
         // }
-        return res;
+        return res?.property;
       })
     );
   }
